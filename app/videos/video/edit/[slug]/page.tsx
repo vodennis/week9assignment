@@ -1,16 +1,24 @@
 import { PrismaClient } from '@prisma/client';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const prisma = new PrismaClient();
 
 export default async function EditVideoPage({ params }) {
-  const video = await prisma.video.findUnique({ where: { id: parseInt(params.slug, 10) } });
+  const video = await prisma.video.findUnique({
+    where: { id: parseInt(params.slug, 10) },
+  });
 
-  return <EditForm video={video} />;
+  if (!video) {
+    return <div>Video not found</div>;
+  }
+
+  return <ClientEditForm video={video} />;
 }
 
-function EditForm({ video }) {
+function ClientEditForm({ video }) {
+  'use client';
+
   const [name, setName] = useState(video.name);
   const [url, setUrl] = useState(video.url);
   const [votes, setVotes] = useState(video.votes);
@@ -38,4 +46,3 @@ function EditForm({ video }) {
     </form>
   );
 }
-
