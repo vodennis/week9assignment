@@ -1,3 +1,5 @@
+'use client';
+
 import { PrismaClient } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
