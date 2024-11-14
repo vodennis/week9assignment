@@ -1,8 +1,7 @@
-// app/videos/video/edit/[slug]/page.tsx
 'use client';
 
 import { PrismaClient } from '@prisma/client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const prisma = new PrismaClient();
@@ -19,15 +18,14 @@ export default function EditVideoPage({ params }) {
   const [video, setVideo] = useState<Video | null>(null);
   const router = useRouter();
 
-  // Fetch video data once on mount
-  useState(() => {
+  useEffect(() => {
     async function fetchVideo() {
       const res = await fetch(`/api/videos/${params.slug}`);
       const data = await res.json();
       setVideo(data);
     }
     fetchVideo();
-  }, []);
+  }, []); // Corrected dependency array
 
   if (!video) return <div>Loading...</div>;
 
@@ -57,3 +55,4 @@ export default function EditVideoPage({ params }) {
     </form>
   );
 }
+
