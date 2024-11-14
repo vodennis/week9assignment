@@ -1,18 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import Link from 'next/link';
 
-const prisma = new PrismaClient();
-
-export default async function Home() {
-  const videos = await prisma.video.findMany();
-
+export default function Home() {
   return (
     <div>
-      <h1>Video List</h1>
-      <ul>
-        {videos.map((video) => (
-          <li key={video.id}>{video.name}</li>
-        ))}
-      </ul>
+      <h1>Check Out These Great Videos!!</h1>
+      <Link href="/videos">Go to Video List</Link>
     </div>
   );
 }
