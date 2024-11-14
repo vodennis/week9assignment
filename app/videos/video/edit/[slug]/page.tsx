@@ -1,30 +1,47 @@
+// app/videos/video/edit/[slug]/page.tsx
 'use client';
 
 import { PrismaClient } from '@prisma/client';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
 
 const prisma = new PrismaClient();
 
-export default async function EditVideoPage({ params }) {
-  const video = await prisma.video.findUnique({ where: { id: parseInt(params.slug, 10) } });
+type Video = {
+  id: number;
+  name: string;
+  url: string;
+  votes: number;
+  length: number;
+};
 
-  return <EditForm video={video} />;
-}
-
-function EditForm({ video }) {
-  const [name, setName] = useState(video.name);
-  const [url, setUrl] = useState(video.url);
-  const [votes, setVotes] = useState(video.votes);
-  const [length, setLength] = useState(video.length);
+export default function EditVideoPage({ params }) {
+  const [video, setVideo] = useState<Video | null>(null);
   const router = useRouter();
+
+  // Fetch video data once on mount
+  useState(() => {
+    async function fetchVideo() {
+      const res = await fetch(`/api/videos/${params.slug}`);
+      const data = await res.json();
+      setVideo(data);
+    }
+    fetchVideo();
+  }, []);
+
+  if (!video) return <div>Loading...</div>;
 
   async function handleSubmit(e) {
     e.preventDefault();
     await fetch(`/api/videos/${video.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, url, votes, length }),
+      body: JSON.stringify({
+        name: video.name,
+        url: video.url,
+        votes: video.votes,
+        length: video.length,
+      }),
     });
     router.push('/videos');
   }
@@ -32,14 +49,11 @@ function EditForm({ video }) {
   return (
     <form onSubmit={handleSubmit}>
       <h1>Edit Video</h1>
-      <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-      <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} required />
-      <input type="number" value={votes} onChange={(e) => setVotes(parseInt(e.target.value, 10))} required />
-      <input type="number" value={length} onChange={(e) => setLength(parseInt(e.target.value, 10))} required />
+      <input type="text" value={video.name} onChange={(e) => setVideo({ ...video, name: e.target.value })} required />
+      <input type="text" value={video.url} onChange={(e) => setVideo({ ...video, url: e.target.value })} required />
+      <input type="number" value={video.votes} onChange={(e) => setVideo({ ...video, votes: parseInt(e.target.value) })} required />
+      <input type="number" value={video.length} onChange={(e) => setVideo({ ...video, length: parseInt(e.target.value) })} required />
       <button type="submit">Update Video</button>
     </form>
   );
 }
-
-
-

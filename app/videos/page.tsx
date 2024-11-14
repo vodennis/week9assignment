@@ -1,13 +1,19 @@
+// app/videos/page.tsx
 'use client';
 
-import { PrismaClient } from '@prisma/client';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-const prisma = new PrismaClient();
+type Video = {
+  id: number;
+  name: string;
+  url: string;
+  votes: number;
+  length: number;
+};
 
 export default function VideosPage() {
-  const [videoList, setVideoList] = useState([]);
+  const [videoList, setVideoList] = useState<Video[]>([]);
 
   useEffect(() => {
     async function fetchVideos() {
@@ -18,7 +24,7 @@ export default function VideosPage() {
     fetchVideos();
   }, []);
 
-  async function handleDelete(id) {
+  async function handleDelete(id: number) {
     const response = await fetch(`/api/videos/${id}`, {
       method: 'DELETE',
     });
