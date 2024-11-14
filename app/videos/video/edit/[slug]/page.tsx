@@ -1,10 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-
-const prisma = new PrismaClient();
 
 export default async function EditVideoPage({ params }) {
+  const prisma = new PrismaClient();
   const video = await prisma.video.findUnique({
     where: { id: parseInt(params.slug, 10) },
   });
@@ -18,6 +15,9 @@ export default async function EditVideoPage({ params }) {
 
 function ClientEditForm({ video }) {
   'use client';
+
+  const { useRouter } = require('next/navigation');
+  const { useState } = require('react');
 
   const [name, setName] = useState(video.name);
   const [url, setUrl] = useState(video.url);
