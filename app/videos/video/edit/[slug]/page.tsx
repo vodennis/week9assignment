@@ -25,23 +25,25 @@ export default function EditVideoPage({ params }) {
       setVideo(data);
     }
     fetchVideo();
-  }, []); // Corrected dependency array
+  }, [params.slug]);
 
   if (!video) return <div>Loading...</div>;
 
   async function handleSubmit(e) {
     e.preventDefault();
-    await fetch(`/api/videos/${video.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: video.name,
-        url: video.url,
-        votes: video.votes,
-        length: video.length,
-      }),
-    });
-    router.push('/videos');
+    if (video) { 
+      await fetch(`/api/videos/${video.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: video.name,
+          url: video.url,
+          votes: video.votes,
+          length: video.length,
+        }),
+      });
+      router.push('/videos');
+    }
   }
 
   return (
@@ -55,4 +57,3 @@ export default function EditVideoPage({ params }) {
     </form>
   );
 }
-
